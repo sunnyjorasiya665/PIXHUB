@@ -175,3 +175,107 @@ Output: Return ONLY the final adjusted image. Do not return text.`;
     
     return handleApiResponse(response, 'adjustment');
 };
+
+/**
+ * Generates an upscaled version of an image.
+ * @param originalImage The original image file.
+ * @returns A promise that resolves to the data URL of the upscaled image.
+ */
+export const generateUpscaledImage = async (
+    originalImage: File,
+): Promise<string> => {
+    console.log(`Starting image upscaling`);
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+    
+    const originalImagePart = await fileToPart(originalImage);
+    const prompt = `You are an expert photo editor AI. Your task is to upscale the provided image to a higher resolution.
+    
+Editing Guidelines:
+- Enhance details and sharpness.
+- The result must look natural and not overly processed.
+- Do not add, remove, or change any content in the image. The composition must remain identical.
+
+Output: Return ONLY the final upscaled image. Do not return text.`;
+    const textPart = { text: prompt };
+
+    console.log('Sending image and upscale prompt to the model...');
+    const response: GenerateContentResponse = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-image',
+        contents: { parts: [originalImagePart, textPart] },
+    });
+    console.log('Received response from model for upscaling.', response);
+    
+    return handleApiResponse(response, 'upscaling');
+};
+
+
+/**
+ * Changes the background of a portrait for a passport photo.
+ * @param originalImage The cropped portrait image file.
+ * @param backgroundColor The desired background color (e.g., "white", "light blue").
+ * @returns A promise that resolves to the data URL of the image with the new background.
+ */
+export const generatePassportPhoto = async (
+    originalImage: File,
+    backgroundColor: string,
+): Promise<string> => {
+    console.log(`Generating passport photo with ${backgroundColor} background.`);
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+    
+    const originalImagePart = await fileToPart(originalImage);
+    const prompt = `You are an expert photo editor AI. Your task is to prepare a portrait for use as an official passport photo by changing its background.
+User Request: "Change the background to ${backgroundColor}."
+
+Editing Guidelines:
+- Replace the existing background of the portrait with a solid, uniform color: ${backgroundColor}.
+- The subject's hair, clothes, and outline must be preserved with clean, sharp edges.
+- The result must be professional and realistic, suitable for an official document.
+- Do not alter the subject in any way (e.g., no changes to facial features, skin tone, or clothing color).
+
+Output: Return ONLY the final edited image. Do not return text.`;
+    const textPart = { text: prompt };
+
+    console.log('Sending image and passport prompt to the model...');
+    const response: GenerateContentResponse = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-image',
+        contents: { parts: [originalImagePart, textPart] },
+    });
+    console.log('Received response from model for passport photo.', response);
+    
+    return handleApiResponse(response, 'passport photo');
+};
+
+/**
+ * Generates an image with automatic adjustments applied using generative AI.
+ * @param originalImage The original image file.
+ * @returns A promise that resolves to the data URL of the adjusted image.
+ */
+export const generateAutoAdjustedImage = async (
+    originalImage: File,
+): Promise<string> => {
+    console.log(`Starting auto-adjustment`);
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+    
+    const originalImagePart = await fileToPart(originalImage);
+    const prompt = `You are an expert photo editor AI. Your task is to automatically analyze this image and apply professional adjustments to improve its overall quality.
+    
+Editing Guidelines:
+- Analyze brightness, contrast, color balance, and sharpness.
+- Apply corrections to make the image look more natural, vibrant, and well-balanced.
+- The result must be photorealistic and represent a clear improvement over the original.
+
+Safety & Ethics Policy:
+- Adjustments may subtly shift colors or skin tones for enhancement purposes, but you MUST ensure they do not alter a person's fundamental race or ethnicity.
+
+Output: Return ONLY the final edited image. Do not return text.`;
+    const textPart = { text: prompt };
+
+    console.log('Sending image and auto-adjust prompt to the model...');
+    const response: GenerateContentResponse = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-image',
+        contents: { parts: [originalImagePart, textPart] },
+    });
+    console.log('Received response from model for auto-adjustment.', response);
+    
+    return handleApiResponse(response, 'auto-adjustment');
+};

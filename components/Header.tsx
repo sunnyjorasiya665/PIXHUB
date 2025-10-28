@@ -11,7 +11,7 @@ const Header: React.FC = () => {
       <div className="flex items-center justify-center gap-3">
           <SparklesIcon className="w-6 h-6 text-blue-400" />
           <h1 className="text-xl font-bold tracking-tight text-gray-100">
-            Pixshop
+            JoraPix
           </h1>
       </div>
     </header>
